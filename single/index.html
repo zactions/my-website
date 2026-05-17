@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>了不起的 Zac</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+  <!-- Security Headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'none';">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#0a0a0a">
+  <style>
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ===== Navigation ===== */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 20px 24px;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(139, 0, 0, 0.3);
+    }
+    nav a {
+      color: #888;
+      text-decoration: none;
+      font-size: 0.95em;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 0;
+      position: relative;
+      transition: color 0.3s;
+      cursor: pointer;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: #8b0000;
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+    nav a:hover, nav a.active { color: #e0e0e0; }
+    nav a:hover::after, nav a.active::after { transform: scaleX(1); }
+
+    /* ===== Page Sections ===== */
+    .page { display: none; min-height: 100vh; padding: 100px 24px 80px; }
+    .page.active { display: block; }
+
+    /* ===== Container ===== */
+    .container { max-width: 720px; margin: 0 auto; }
+
+    /* ===== Home Page ===== */
+    #page-home {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      min-height: 100vh;
+      padding-top: 0;
+    }
+    .hero-title {
+      font-size: clamp(2.2em, 6vw, 4em);
+      font-weight: 900;
+      color: #e0e0e0;
+      letter-spacing: 4px;
+      margin-bottom: 24px;
+      animation: fadeInUp 0.8s ease-out;
+    }
+    .hero-title span {
+      color: #8b0000;
+    }
+    .hero-subtitle {
+      font-size: clamp(1em, 2.5vw, 1.25em);
+      color: #888;
+      max-width: 520px;
+      line-height: 2;
+      animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+    .hero-subtitle .highlight {
+      color: #e0e0e0;
+      font-weight: 700;
+    }
+
+    /* ===== Check-in Section ===== */
+    .checkin-section {
+      margin-top: 60px;
+      animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+    .checkin-title {
+      font-size: 0.8em;
+      color: #555;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .checkin-grid {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .checkin-item {
+      background: rgba(139, 0, 0, 0.08);
+      border: 1px solid rgba(139, 0, 0, 0.25);
+      border-radius: 10px;
+      padding: 18px 28px;
+      min-width: 180px;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .checkin-item:hover {
+      border-color: rgba(139, 0, 0, 0.6);
+      background: rgba(139, 0, 0, 0.15);
+    }
+    .checkin-item .icon {
+      font-size: 1.4em;
+      margin-bottom: 8px;
+    }
+    .checkin-item .label {
+      font-size: 0.78em;
+      color: #666;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .checkin-item .value {
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #e0e0e0;
+      margin-top: 4px;
+    }
+    .checkin-item .value.done { color: #2ecc71; }
+
+    /* ===== Timeline Page ===== */
+    .page-title {
+      font-size: clamp(1.6em, 4vw, 2.4em);
+      font-weight: 900;
+      color: #e0e0e0;
+      letter-spacing: 3px;
+      margin-bottom: 12px;
+    }
+    .page-desc {
+      color: #555;
+      font-size: 0.95em;
+      margin-bottom: 48px;
+      line-height: 1.8;
+    }
+    .timeline {
+      position: relative;
+      padding-left: 36px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: linear-gradient(to bottom, #8b0000, #333, #2ecc71);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.5s ease-out both;
+    }
+    .tl-item:nth-child(2) { animation-delay: 0.1s; }
+    .tl-item:nth-child(3) { animation-delay: 0.2s; }
+    .tl-item:nth-child(4) { animation-delay: 0.3s; }
+    .tl-item:nth-child(5) { animation-delay: 0.4s; }
+    .tl-item:nth-child(6) { animation-delay: 0.5s; }
+    .tl-item:nth-child(7) { animation-delay: 0.6s; }
+    .tl-dot {
+      position: absolute;
+      left: -36px;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #0a0a0a;
+      z-index: 1;
+    }
+    .tl-dot.escape { background: #8b0000; box-shadow: 0 0 0 3px rgba(139,0,0,0.3); }
+    .tl-dot.persist { background: #2ecc71; box-shadow: 0 0 0 3px rgba(46,204,113,0.3); }
+    .tl-year {
+      font-size: 0.78em;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .tl-year.escape { color: #8b0000; }
+    .tl-year.persist { color: #2ecc71; }
+    .tl-text {
+      color: #aaa;
+      font-size: 0.95em;
+      line-height: 1.9;
+    }
+    .tl-text .tag {
+      font-weight: 700;
+      padding: 1px 8px;
+      border-radius: 4px;
+      font-size: 0.88em;
+    }
+    .tl-text .tag.escape { color: #8b0000; background: rgba(139,0,0,0.15); }
+    .tl-text .tag.persist { color: #2ecc71; background: rgba(46,204,113,0.1); }
+    .tl-reflect {
+      display: block;
+      margin-top: 10px;
+      color: #555;
+      font-size: 0.88em;
+      font-style: italic;
+      border-left: 2px solid #333;
+      padding-left: 12px;
+    }
+
+    /* ===== Rules Page ===== */
+    .rules-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-top: 12px;
+    }
+    .rule-card {
+      background: transparent;
+      border: 1px solid #1a1a1a;
+      border-radius: 12px;
+      padding: 32px 36px;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .rule-card:hover {
+      border-color: #8b0000;
+      background: rgba(139, 0, 0, 0.05);
+    }
+    .rule-num {
+      font-size: 0.72em;
+      color: #8b0000;
+      letter-spacing: 3px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .rule-text {
+      font-size: clamp(1.1em, 2.5vw, 1.35em);
+      font-weight: 700;
+      color: #e0e0e0;
+      line-height: 1.7;
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      color: #333;
+      font-size: 0.8em;
+      letter-spacing: 1px;
+      border-top: 1px solid #1a1a1a;
+    }
+
+    /* ===== Animations ===== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 600px) {
+      nav { gap: 20px; padding: 16px 12px; }
+      nav a { font-size: 0.82em; letter-spacing: 1px; }
+      .page { padding: 90px 16px 60px; }
+      .checkin-item { min-width: 140px; padding: 14px 18px; }
+      .rule-card { padding: 24px 20px; }
+      .timeline { padding-left: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav>
+  <a onclick="switchPage('home')" class="active">首页</a>
+  <a onclick="switchPage('timeline')">经历</a>
+  <a onclick="switchPage('rules')">原则</a>
+</nav>
+
+<!-- ===== Page: Home ===== -->
+<div id="page-home" class="page active">
+  <div class="container">
+    <h1 class="hero-title">了不起的 <span>Zac</span></h1>
+    <p class="hero-subtitle">
+      我是 Zac，我立下了一个规矩：<br>
+      从今天起，每一件事，无论多难，我都干完。<br>
+      没有放弃，没有逃跑。
+    </p>
+
+    <div class="checkin-section">
+      <div class="checkin-title">每日打卡</div>
+      <div class="checkin-grid">
+        <div class="checkin-item">
+          <div class="icon">✅</div>
+          <div class="label">俯卧撑</div>
+          <div class="value done">100 / 100</div>
+        </div>
+        <div class="checkin-item">
+          <div class="icon">✅</div>
+          <div class="label">英语</div>
+          <div class="value done">1h / 1h</div>
+        </div>
+        <div class="checkin-item">
+          <div class="icon">✅</div>
+          <div class="label">复盘</div>
+          <div class="value done">1 / 1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page: Timeline ===== -->
+<div id="page-timeline" class="page">
+  <div class="container">
+    <h2 class="page-title">经历</h2>
+    <p class="page-desc">这里没有成功故事，只有我一次次"想逃"和"硬撑"的记录。</p>
+
+    <div class="timeline">
+      <!-- 2018 -->
+      <div class="tl-item">
+        <div class="tl-dot escape"></div>
+        <div class="tl-year escape">2018 年 — 逃</div>
+        <div class="tl-text">
+          去北京大宝化妆品公司打工，两班倒，累 + 被骂，干了两天就辞职。
+          <span class="tag escape">（逃）</span>
+          <span class="tl-reflect">反思：怕苦，我选了最省力的路。</span>
+        </div>
+      </div>
+
+      <!-- 2019–2021 -->
+      <div class="tl-item">
+        <div class="tl-dot persist"></div>
+        <div class="tl-year persist">2019 — 2021 年 — 撑</div>
+        <div class="tl-text">
+          创办补习班，从零做起，招生、教学、管理全扛下来，成功运营。
+          <span class="tag persist">（撑）</span>
+          <span class="tl-reflect">反思：原来我能撑住的时候，是可以做出东西的。</span>
+        </div>
+      </div>
+
+      <!-- 2023–2025 -->
+      <div class="tl-item">
+        <div class="tl-dot escape"></div>
+        <div class="tl-year escape">2023 — 2025 年 — 逃</div>
+        <div class="tl-text">
+          在部队，怕单杠练不好、怕考核不过、怕被批评，选择了退伍。
+          <span class="tag escape">（逃）</span>
+          <span class="tl-reflect">反思：我逃了，但问题没有消失，只是延迟了。</span>
+        </div>
+      </div>
+
+      <!-- 2025 备考 -->
+      <div class="tl-item">
+        <div class="tl-dot escape"></div>
+        <div class="tl-year escape">2025 年 — 逃</div>
+        <div class="tl-text">
+          退伍后说"要考研"，在北大的专业课面前打游戏逃避，最后没考上。
+          <span class="tag escape">（逃）</span>
+          <span class="tl-reflect">反思：逃避比失败更让人看不起自己。</span>
+        </div>
+      </div>
+
+      <!-- 2026 入职 -->
+      <div class="tl-item">
+        <div class="tl-dot escape"></div>
+        <div class="tl-year escape">2026 年初 — 逃</div>
+        <div class="tl-text">
+          入职指南针公司，两个月后因业绩压力和产品价值质疑离职。
+          <span class="tag escape">（逃）</span>
+          <span class="tl-reflect">反思：我不是不能干，我是不敢面对"干不好"的自己。</span>
+        </div>
+      </div>
+
+      <!-- 2026 BEC -->
+      <div class="tl-item">
+        <div class="tl-dot persist"></div>
+        <div class="tl-year persist">2026 年 5 月 16 日 — 撑</div>
+        <div class="tl-text">
+          BEC 初级英语考试，听力听不懂、口语说不出，但硬着头皮考完了。
+          <span class="tag persist">（撑）</span>
+          <span class="tl-reflect">反思：这一次我没有逃。撑过去之后，我发现"怕"是可以被干掉的。</span>
+        </div>
+      </div>
+
+      <!-- 现在 -->
+      <div class="tl-item">
+        <div class="tl-dot persist"></div>
+        <div class="tl-year persist">现在 → 一年之约 — 撑</div>
+        <div class="tl-text">
+          每天 100 个俯卧撑、每天 1 小时英语、每周复盘、每月定投 ETF。
+          <span class="tag persist">（撑）</span>
+          <span class="tl-reflect">反思：了不起不是成就，是态度。这些小事，我打算干满一年。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Page: Rules ===== -->
+<div id="page-rules" class="page">
+  <div class="container">
+    <h2 class="page-title">原则</h2>
+    <p class="page-desc">这些原则，是我用一次次的"逃"换来的。</p>
+
+    <div class="rules-grid">
+      <div class="rule-card">
+        <div class="rule-num">01</div>
+        <div class="rule-text">遇到困难，先问"我怎么才能撑过去"，而不是"我能不能换条路"。</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">02</div>
+        <div class="rule-text">先干完，再谈情绪。情绪是干完之后的奖励，不是干之前的借口。</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">03</div>
+        <div class="rule-text">同理心留给有资格的人。自己都站不稳，扶别人只会一起倒。</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">04</div>
+        <div class="rule-text">对面弱爆了，就快速推塔。工作中的目标是完成任务、赚到钱，不是打公平竞技。</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">05</div>
+        <div class="rule-text">如果我没钱没本事，对谁好都是打扰。</div>
+      </div>
+      <div class="rule-card">
+        <div class="rule-num">06</div>
+        <div class="rule-text">投资自己的脑子、身体和时间，这三样东西别人永远拿不走。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 了不起的 Zac &nbsp;·&nbsp; 每一件事，无论多难，都干完。</footer>
+
+<!-- ===== Native JS: SPA Page Switch ===== -->
+<script>
+  function switchPage(pageName) {
+    // Hide all pages
+    var pages = document.querySelectorAll('.page');
+    for (var i = 0; i < pages.length; i++) {
+      pages[i].classList.remove('active');
+    }
+    // Show target page
+    var target = document.getElementById('page-' + pageName);
+    if (target) {
+      target.classList.add('active');
+    }
+    // Update nav active state
+    var navLinks = document.querySelectorAll('nav a');
+    for (var j = 0; j < navLinks.length; j++) {
+      navLinks[j].classList.remove('active');
+      if (navLinks[j].getAttribute('onclick') === "switchPage('" + pageName + "')") {
+        navLinks[j].classList.add('active');
+      }
+    }
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Re-trigger animations on page switch
+  var observer = new MutationObserver(function() {
+    var activePage = document.querySelector('.page.active');
+    if (activePage) {
+      var animated = activePage.querySelectorAll('.tl-item, .rule-card');
+      for (var k = 0; k < animated.length; k++) {
+        animated[k].style.animation = 'none';
+        animated[k].offsetHeight; // trigger reflow
+        animated[k].style.animation = '';
+      }
+    }
+  });
+  observer.observe(document.getElementById('page-timeline'), { attributes: true, attributeFilter: ['class'] });
+  observer.observe(document.getElementById('page-rules'), { attributes: true, attributeFilter: ['class'] });
+</script>
+
+</body>
+</html>
